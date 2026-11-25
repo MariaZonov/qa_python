@@ -1,13 +1,5 @@
 import pytest
-from main import BooksCollector
 
-@pytest.fixture(scope="function", autouse=True)
-def collector():
-    return BooksCollector()
-
-@pytest.fixture(scope="session", autouse=False)
-def book_names():
-    return ('Преследователь', 'Мы', 'На берегах Сены','Темные аллеи')
 
 class TestBooksCollector:
 
@@ -64,8 +56,7 @@ class TestBooksCollector:
             'Роман',
             ''
         ]
-    )
-        
+    )      
     def test_set_book_genre_invalid_genre(self, genre, collector):
         name = 'Ромео и Джульетта'
 
@@ -151,3 +142,23 @@ class TestBooksCollector:
         collector.delete_book_from_favorites(book_names[0])
 
         assert collector.get_list_of_favorites_books() == list(book_names)[1:]
+
+    def test_get_books_genre_returns_dictionary(self, collector):
+        collector.add_new_book('Мы')
+        collector.set_book_genre('Мы', 'Фантастика')
+
+        assert collector.get_books_genre() == {
+            'Мы': 'Фантастика'
+        }
+
+    def test_get_book_genre_returns_correct_genre(self, collector):
+        collector.add_new_book('Преследователь')
+        collector.set_book_genre('Преследователь', 'Детективы')
+
+        assert collector.get_book_genre('Преследователь') == 'Детективы'
+
+    def test_get_list_of_favorites_books_returns_list(self, collector):
+        collector.add_new_book('Темные аллеи')
+        collector.add_book_in_favorites('Темные аллеи')
+
+        assert collector.get_list_of_favorites_books() == ['Темные аллеи']
